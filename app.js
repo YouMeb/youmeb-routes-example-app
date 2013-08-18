@@ -20,7 +20,6 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-app.use(routes.middleware());
 app.use(app.router);
 
 // development only

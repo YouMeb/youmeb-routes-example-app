@@ -10,7 +10,7 @@ module.exports = function () {
   this.hello = {
     path: '/:name', // default: '/'
     handler: function (req, res, next) {
-      res.send('hello ' + req.params.name);
+      res.send('hello ' + req.params.name + '<br />admin: ' + req.$routes.generateUrl('admin.hello.index', {name: 'xdd'}));
     }
   };
 
