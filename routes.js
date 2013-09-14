@@ -6,40 +6,33 @@ var Routes = require('youmeb-routes');
 module.exports = function (app) {
 
   var routes = Routes.create(app);
-  var groups = {
-    guest: [],
-    admin: ['guest']
-  };
 
   routes
     .source(path.join(__dirname, 'controllers'))
-    .useFirewall(function (req, res, next) {
+    .useFirewall({
+      user: 'guest',
+      admin: ['user']
+    }, function (req, res, next) {
       var group = req.query.group || '';
       var security = req.$route.security;
 
-      if (!groups.hasOwnProperty(group)) {
-        group = 'guest';
-      }
-
-      next(null, (function check(group) {
-        var len;
+      next(null, (function () {
 
         if (!!~security.indexOf(group)) {
           return true;
         }
 
-        if (groups.hasOwnProperty(group)) {
-          len = groups[group].length;
-          while (len) {
-            len -= 1;
-            if (check(groups[group][len])) {
-              return true;
-            }
+        var len = security.length;
+
+        while (len--) {
+          if (!!~req.groups[security[len]].indexOf(group)) {
+            return true;
           }
         }
 
         return false;
-      })(group));
+
+      })());
     });
 
   return routes;
